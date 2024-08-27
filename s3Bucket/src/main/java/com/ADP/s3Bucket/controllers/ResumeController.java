@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,16 +22,19 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ADP.s3Bucket.services.S3Service;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/resume")
 public class ResumeController {
 
     @Autowired
     private S3Service s3Service;
 
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadResume(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/upload/{userId}/{jobId}")
+    public ResponseEntity<String> uploadResume(@RequestParam("file") MultipartFile file, 
+                                            @PathVariable("userId") String userId,
+                                            @PathVariable("jobId") String jobId) {
         try {
-            String fileUrl = s3Service.uploadFile(file); // Directly pass MultipartFile
+            String fileUrl = s3Service.uploadFile(file, userId, jobId); // Directly pass MultipartFile
             return ResponseEntity.ok(fileUrl);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Failed to upload file: " + e.getMessage());

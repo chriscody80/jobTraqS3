@@ -34,9 +34,9 @@ public class S3Service {
         this.s3Client = s3Client;
     }
 
-    public String uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file, String userId, String jobId) {
         try (InputStream inputStream = file.getInputStream()) {
-            String key = file.getOriginalFilename();
+            String key = userId + "_" + jobId + ".pdf";
             s3Client.putObject(PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(key)
